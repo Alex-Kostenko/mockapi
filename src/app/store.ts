@@ -1,10 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import { api } from './service';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    [api.reducerPath]: api.reducer,
   },
+  middleware: (gDM) => gDM().concat(api.middleware),
 });
 
 export type AppDispatch = typeof store.dispatch;
