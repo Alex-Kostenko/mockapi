@@ -8,15 +8,15 @@ import React, {
 
 import { lettersRegExp, positiveNumbersRegex } from '../../utils/regex';
 import { VALIDATIONS_ERRORS } from '../../utils/constants';
-import { FormErrors, IUser } from '../../utils/types';
+import { IFormErrors, IUser } from '../../utils/types';
 import { StyledForm } from './styles';
 
 interface Props {
   handleSaveUser: (event: { preventDefault: () => void }) => void;
   newUser: IUser;
   setNewUser: Dispatch<SetStateAction<IUser>>;
-  errors: FormErrors;
-  setErrors: Dispatch<SetStateAction<FormErrors>>;
+  errors: IFormErrors;
+  setErrors: Dispatch<SetStateAction<IFormErrors>>;
 }
 
 const Form: FC<Props> = ({
