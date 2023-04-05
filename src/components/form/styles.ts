@@ -3,10 +3,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { Palette } from '../../palette';
-import { FormErrors } from '../../utils/types';
+import { IFormErrors } from '../../utils/types';
 
 export const StyledForm = styled.form.attrs(
-  (props: { errors: FormErrors }) => props
+  (props: { errors: IFormErrors }) => props
 )`
   display: flex;
   flex-direction: column;

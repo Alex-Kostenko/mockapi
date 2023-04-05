@@ -6,8 +6,13 @@ export interface IUser {
   createdAt?: string;
 }
 
-export interface FormErrors {
+export interface IFormErrors {
   name?: string;
   age?: string;
   about?: string;
+}
+
+export interface IColumn {
+  Header: string;
+  accessor: string;
 }

@@ -6,6 +6,7 @@ export const Styles = styled.div`
   padding: 1rem;
 
   table {
+    min-width: 1000px;
     border-spacing: 0;
     border: 1px solid ${Palette.greyLight};
 
@@ -29,21 +30,31 @@ export const Styles = styled.div`
         border-right: 0;
         text-align: center;
       }
+
+      :not(:last-child) {
+        width: 220px;
+      }
+
+      :first-child {
+        width: 50px;
+      }
+
+      input {
+        margin: -5px;
+        width: 100%;
+        padding: 5px;
+        font-size: inherit;
+        font-family: inherit;
+      }
     }
 
     th {
-      background: ${Palette.greyLight};
-
       .add-new-user-btn {
-        font-size: 4rem;
+        font-size: 2rem;
         background: none;
         text-align: center;
       }
     }
-  }
-
-  .pagination {
-    padding: 0.5rem;
   }
 
   button {

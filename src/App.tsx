@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Column } from 'react-table';
 
 import './App.css';
-import Table from './components/table';
 import { useGetAllUsersQuery } from './app/service';
+import Loader from './components/loader';
+import Table from './components/table';
 import { Styles } from './components/table/styles';
+import { IUser } from './utils/types';
 
 function App() {
-  const { data: users } = useGetAllUsersQuery();
-  const [tableData, setTableData] = useState(users);
+  const { data: users, isFetching } = useGetAllUsersQuery();
+  const [data, setData] = useState(users ? users : []);
   const [skipPageReset, setSkipPageReset] = useState(false);
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
         Header: 'Id',
@@ -32,35 +35,29 @@ function App() {
     []
   );
 
-  // const updateMyData = (
-  //   rowIndex: string | number,
-  //   columnId: number,
-  //   value: string | number
-  // ) => {
-  //   // We also turn on the flag to not reset the page
-  //   setSkipPageReset(true);
-  //   setData((old) =>
-  //     old.map((row, index) => {
-  //       if (index === rowIndex) {
-  //         return {
-  //           ...old[rowIndex],
-  //           [columnId]: value,
-  //         };
-  //       }
-  //       return row;
-  //     })
-  //   );
-  // };
+  useEffect(() => {
+    setSkipPageReset(false);
+  }, [data]);
+
+  useEffect(() => {
+    setData(users || []);
+  }, [users]);
+
+  if (isFetching) {
+    return <Loader />;
+  }
 
   return (
     <div className="App">
       <header className="App-header">
         <Styles>
           <Table
-            columns={columns}
-            data={users ? users : []}
-            // updateMyData={updateMyData}
-            // skipPageReset={skipPageReset}
+            columns={columns as Column<IUser>[]}
+            data={data}
+            setData={setData}
+            users={users || []}
+            skipPageReset={skipPageReset}
+            setSkipPageReset={setSkipPageReset}
           />
         </Styles>
       </header>
