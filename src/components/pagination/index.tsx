@@ -1,21 +1,24 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { PAGE_SIZE_LIST } from '../../utils/constants';
 import { StyledPagination } from './styles';
 
-interface Props {
-  gotoPage: (updater: number | ((pageIndex: number) => number)) => void;
+interface PaginationProps {
   handleDefaultParams: () => void;
   canPreviousPage: boolean;
   previousPage: () => void;
-  nextPage: () => void;
   canNextPage: boolean;
   pageCount: number;
   pageIndex: number;
   pageOptions: number[];
-  setPageSize: (pageSize: number) => void;
   pageSize: number;
+  nextPage: () => void;
+  setPageSize: (pageSize: number) => void;
+  gotoPage: (updater: number | ((pageIndex: number) => number)) => void;
 }
 
-const Pagination: FC<Props> = ({
+const Pagination: FC<PaginationProps> = ({
   gotoPage,
   handleDefaultParams,
   canPreviousPage,
@@ -28,78 +31,92 @@ const Pagination: FC<Props> = ({
   setPageSize,
   pageSize,
 }) => {
-  const pageSizeList = [5, 10, 20];
+  const { t } = useTranslation();
+
+  const handleGoToStartPage = () => {
+    gotoPage(0);
+    handleDefaultParams();
+  };
+
+  const handlePreviousPage = () => {
+    previousPage();
+    handleDefaultParams();
+  };
+  const handleNextPage = () => {
+    nextPage();
+    handleDefaultParams();
+  };
+
+  const handleGoToEndPage = () => {
+    gotoPage(pageCount - 1);
+    handleDefaultParams();
+  };
+
+  const handleGoToPageInput = (value: string) => {
+    const page = value ? Number(value) - 1 : 0;
+    gotoPage(page);
+  };
+
+  const handlePageSizeSelect = (value: string) => {
+    setPageSize(Number(value));
+    handleDefaultParams();
+  };
 
   return (
     <StyledPagination>
       <button
-        onClick={() => {
-          gotoPage(0);
-          handleDefaultParams();
-        }}
+        className="pagination-btn"
+        onClick={handleGoToStartPage}
         disabled={!canPreviousPage}
       >
         {'<<'}
-      </button>{' '}
+      </button>
       <button
-        onClick={() => {
-          previousPage();
-          handleDefaultParams();
-        }}
+        className="pagination-btn"
+        onClick={handlePreviousPage}
         disabled={!canPreviousPage}
       >
         {'<'}
-      </button>{' '}
+      </button>
       <button
-        onClick={() => {
-          nextPage();
-          handleDefaultParams();
-        }}
+        className="pagination-btn"
+        onClick={handleNextPage}
         disabled={!canNextPage}
       >
         {'>'}
-      </button>{' '}
+      </button>
       <button
-        onClick={() => {
-          gotoPage(pageCount - 1);
-          handleDefaultParams();
-        }}
+        className="pagination-btn"
+        onClick={handleGoToEndPage}
         disabled={!canNextPage}
       >
         {'>>'}
       </button>
-      {'  '}
       <span>
-        Page
+        {t('defaultMenu.page')}
         <strong>
-          {' '}
-          {pageIndex + 1} of {pageOptions.length}
+          {pageIndex + 1} {t('defaultMenu.of')} {pageOptions.length}
         </strong>
-      </span>{' '}
+      </span>
       <span>
-        | Go to page:{'  '}
+        | {t('defaultMenu.goToPage')}:{'  '}
         <input
           min={0}
           max={pageCount}
           type="number"
           className="page-select"
           defaultValue={pageIndex + 1}
-          onChange={(e) => {
-            const page = e.target.value ? Number(e.target.value) - 1 : 0;
-            gotoPage(page);
-          }}
+          onChange={(e) => handleGoToPageInput(e.target.value)}
         />
-      </span>{' '}
+      </span>
       <select
+        className="page-size-select"
         value={pageSize}
-        onChange={(e) => {
-          setPageSize(Number(e.target.value));
-          handleDefaultParams();
-        }}
+        onChange={(e) => handlePageSizeSelect(e.target.value)}
       >
-        {pageSizeList.map((pageSize) => (
+        {PAGE_SIZE_LIST.map((pageSize) => (
           <option key={pageSize} value={pageSize}>
-            Show {pageSize}
+            {t('defaultMenu.show')} {pageSize}
           </option>
         ))}
       </select>
