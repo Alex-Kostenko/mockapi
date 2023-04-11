@@ -5,14 +5,14 @@ import { Palette } from '../../palette';
 import CloseIcon from '../icons/CloseIcon';
 import { StyledModal } from './styles';
 
-interface Props {
+interface ModalProps {
   open: boolean;
-  children: ReactNode;
+  children?: ReactNode;
   onClose: () => void;
   title: string;
 }
 
-const Modal: FC<Props> = ({ open, children, onClose, title }) => {
+const Modal: FC<ModalProps> = ({ open, children, onClose, title }) => {
   const portal = document.getElementById('modal') as HTMLElement;
   if (!open) {
     document.body.style.overflow = 'unset';
@@ -27,14 +27,13 @@ const Modal: FC<Props> = ({ open, children, onClose, title }) => {
         <div className="header">
           <h2>{title}</h2>
           <button className="close-btn" onClick={onClose}>
-            <CloseIcon size="1.5rem" fill={Palette.grey} />
+            <CloseIcon size="24px" fill={Palette.greyLight} />
           </button>
         </div>
-
         {children}
       </div>
     </StyledModal>,
-    portal
+    portal,
   );
 };
 

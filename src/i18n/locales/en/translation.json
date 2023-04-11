@@ -1,0 +1,31 @@
+{
+  "buttons": {
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+
+  "defaultMenu": {
+    "uk": "Ukraine",
+    "en": "English",
+    "rus": "Russian",
+    "id": "Id",
+    "name": "Name",
+    "age": "Age",
+    "about": "About",
+    "page": "Page",
+    "of": "of",
+    "goToPage": "Go to page",
+    "modalTitle": "Add new user",
+    "enter": "Enter",
+    "ok": "Ok",
+    "alertTitle": "Are you sure?",
+    "show": "Show"
+  },
+  "errors": {
+    "name": "Name must include only letters and be up to 400 characters long",
+    "age": "Age must be a number",
+    "about": "About must be up to 4000 characters long"
+  }
+}

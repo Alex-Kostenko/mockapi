@@ -1,38 +1,47 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Column } from 'react-table';
 
 import './App.css';
 import { useGetAllUsersQuery } from './app/service';
 import Loader from './components/loader';
 import Table from './components/table';
-import { Styles } from './components/table/styles';
 import { IUser } from './utils/types';
 
 function App() {
-  const { data: users, isFetching } = useGetAllUsersQuery();
+  const { data: users, isLoading } = useGetAllUsersQuery();
   const [data, setData] = useState(users ? users : []);
   const [skipPageReset, setSkipPageReset] = useState(false);
+  const { t } = useTranslation();
 
   const columns = useMemo(
     () => [
       {
-        Header: 'Id',
+        Header: t('defaultMenu.id'),
         accessor: 'id',
+        minWidth: 20,
+        textAlign: 'center',
       },
       {
-        Header: 'Name',
+        Header: t('defaultMenu.name'),
         accessor: 'name',
+        minWidth: 200,
+        textAlign: 'start',
       },
       {
-        Header: 'Age',
+        Header: t('defaultMenu.age'),
         accessor: 'age',
+        minWidth: 30,
+        textAlign: 'center',
       },
       {
-        Header: 'About',
+        Header: t('defaultMenu.about'),
         accessor: 'about',
+        minWidth: 250,
+        textAlign: 'start',
       },
     ],
-    []
+    [t],
   );
 
   useEffect(() => {
@@ -43,24 +52,20 @@ function App() {
     setData(users || []);
   }, [users]);
 
-  if (isFetching) {
+  if (isLoading) {
     return <Loader />;
   }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Styles>
-          <Table
-            columns={columns as Column<IUser>[]}
-            data={data}
-            setData={setData}
-            users={users || []}
-            skipPageReset={skipPageReset}
-            setSkipPageReset={setSkipPageReset}
-          />
-        </Styles>
-      </header>
+      <Table
+        columns={columns as Column<IUser>[]}
+        data={data}
+        setData={setData}
+        users={users || []}
+        skipPageReset={skipPageReset}
+        setSkipPageReset={setSkipPageReset}
+      />
     </div>
   );
 }

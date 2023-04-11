@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 
-interface Props {
+interface CloseIconProps {
   size: string;
   fill: string;
 }
 
-const CloseIcon: FC<Props> = ({ size, fill }) => {
+const CloseIcon: FC<CloseIconProps> = ({ size, fill }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

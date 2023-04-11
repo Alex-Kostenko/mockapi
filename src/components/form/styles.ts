@@ -1,53 +1,30 @@
-import React from 'react';
-
 import styled from 'styled-components';
 
 import { Palette } from '../../palette';
-import { IFormErrors } from '../../utils/types';
+import { PADDINGS, SCALES } from '../../utils/constants';
 
-export const StyledForm = styled.form.attrs(
-  (props: { errors: IFormErrors }) => props
-)`
+export const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-
-  input {
-    min-height: 3rem;
+  gap: ${PADDINGS.m};
+  .form-input {
+    display: flex;
+    flex-direction: column;
+  }
+  .input-base {
+    margin: 4px 0;
+    min-height: 48px;
     min-width: 300px;
     border: 1px solid ${Palette.grey};
-    padding: 10px;
-    border-radius: 4px;
+    padding: ${PADDINGS.m};
+    border-radius: ${SCALES.borderRadius};
     outline: none;
   }
-
-  input[name='name'] {
-    border-color: ${({ errors }) => errors.name && Palette.red};
-  }
-  input[name='age'] {
-    border-color: ${({ errors }) => errors.age && Palette.red};
-  }
-  input[name='about'] {
-    border-color: ${({ errors }) => errors.about && Palette.red};
-  }
-
-  .submit-btn {
-    min-height: 2rem;
-    max-width: 100px;
-    background-color: ${Palette.blue};
-    border-radius: 4px;
-    color: ${Palette.white};
-  }
-
-  .submit-btn:hover {
-    background-color: ${Palette.blueLight};
-  }
-
-  .submit-btn:disabled {
-    background-color: ${Palette.grey};
-  }
-
   .error {
-    color: red;
+    border-color: ${Palette.red};
+    color: ${Palette.red};
+  }
+  .error-text {
+    font-size: 14px;
   }
 `;
