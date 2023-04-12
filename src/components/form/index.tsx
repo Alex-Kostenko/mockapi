@@ -4,12 +4,12 @@ import React, {
   FC,
   FormEvent,
   SetStateAction,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { INITIAL_USER } from '../../utils/constants';
 import { UserFieldsEnum } from '../../utils/enums';
 import { capitalizeFirstLetter } from '../../utils/helpers';
 import { lettersRegExp, positiveNumbersRegex } from '../../utils/regex';
@@ -21,8 +21,6 @@ interface FormProps {
   handleSaveUser: (event: { preventDefault: () => void }) => void;
   newUser: IUser;
   setNewUser: Dispatch<SetStateAction<IUser>>;
-  errors: IFormErrors;
-  setErrors: Dispatch<SetStateAction<IFormErrors>>;
   handleCancelButton: () => void;
   isLoading: boolean;
 }
@@ -31,18 +29,19 @@ const Form: FC<FormProps> = ({
   handleSaveUser,
   newUser,
   setNewUser,
-  errors,
-  setErrors,
   handleCancelButton,
   isLoading,
 }) => {
+  const [errors, setErrors] = useState<IFormErrors>(INITIAL_USER);
   const [isSubmit, setIsSubmit] = useState(false);
   const { t } = useTranslation();
 
-  const VALIDATIONS_ERRORS: IUser = {
+  const VALIDATIONS_ERRORS = {
     name: t('errors.name'),
     age: t('errors.age'),
     about: t('errors.about'),
+    ageRequired: t('errors.ageRequired'),
+    nameRequired: t('errors.nameRequired'),
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +70,12 @@ const Form: FC<FormProps> = ({
     setIsSubmit(true);
     if (!isError) {
       handleSaveUser(event);
+    } else {
+      setErrors({
+        ...errors,
+        name: !newUser.name ? VALIDATIONS_ERRORS.nameRequired : errors.name,
+        age: !newUser.age ? VALIDATIONS_ERRORS.ageRequired : errors.age,
+      });
     }
   };
 
@@ -78,17 +83,6 @@ const Form: FC<FormProps> = ({
     () => Object.values(errors).some(Boolean) || !newUser.name || !newUser.age,
     [newUser, errors],
   );
-
-  useEffect(() => {
-    if (isSubmit) {
-      if (!newUser.name) {
-        setErrors({ ...errors, name: 'Name is required' });
-      }
-      if (!newUser.age) {
-        setErrors({ ...errors, age: 'Age is required' });
-      }
-    }
-  }, [isSubmit, newUser.age, newUser.name, setErrors, errors]);
 
   return (
     <StyledForm onSubmit={handleSubmit}>

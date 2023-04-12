@@ -26,6 +26,11 @@ export const StyledButton = styled.div`
     background: ${Palette.blueLight};
   }
 
+  .load-more-button:disabled {
+    background: ${Palette.greyLight};
+    cursor: not-allowed;
+  }
+
   .btn-loader,
   .btn-loader:after {
     border-radius: 50%;

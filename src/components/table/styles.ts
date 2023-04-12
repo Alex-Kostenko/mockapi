@@ -8,16 +8,16 @@ export const StyledTable = styled.table`
   border-spacing: 0;
   border: 1px solid ${Palette.greyLight};
 
-  tr {
+  .table-row {
     :last-child {
-      td {
+      .table-body-cell {
         border-bottom: 0;
       }
     }
   }
 
-  th,
-  td {
+  .table-header-cell,
+  .table-body-cell {
     text-align: start;
     margin: 0;
     padding: 10px;
@@ -48,7 +48,7 @@ export const StyledTable = styled.table`
     }
   }
 
-  th {
+  .table-header-cell {
     .add-new-user-btn {
       cursor: pointer;
       font-size: 32px;
