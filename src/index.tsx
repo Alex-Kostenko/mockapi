@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 
 import App from './App';
 import { store } from './app/store';
+import TabsProvider from './components/context/table';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
@@ -12,10 +13,12 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-      <div id="modal"></div>
-    </Provider>
+    <TabsProvider>
+      <Provider store={store}>
+        <App />
+        <div id="modal"></div>
+      </Provider>
+    </TabsProvider>
   </React.StrictMode>,
 );
 

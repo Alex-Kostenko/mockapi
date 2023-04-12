@@ -17,12 +17,14 @@ import {
   useAddNewUserMutation,
 } from '../../app/service';
 import { INITIAL_USER } from '../../utils/constants';
-import { IFormErrors, IUser } from '../../utils/types';
+import { IUser } from '../../utils/types';
+import { useTableContext } from '../context/table';
 import Form from '../form';
 import LoadButton from '../loadButton';
 import Modal from '../modal';
 import Pagination from '../pagination';
 import { SelectLanguage } from '../selectLanguage';
+import TableInput from '../tableInput';
 import { StyledTable, StyledTableWrapper } from './styles';
 
 interface TableProps {
@@ -40,16 +42,14 @@ const Table: FC<TableProps> = ({
   setData,
   users,
   skipPageReset,
-  setSkipPageReset,
 }) => {
   const [newUser, setNewUser] = useState(INITIAL_USER);
-  const [errors, setErrors] = useState<IFormErrors>(INITIAL_USER);
-  const [isOpenForm, setIsOpenForm] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [alert, setAlert] = useState({ message: '', open: false });
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState('');
   const [deleteUserId, setDeleteUserId] = useState<null | string>(null);
-  const initialData = users;
+  const { state } = useTableContext();
   const { t } = useTranslation();
 
   const [
@@ -86,35 +86,25 @@ const Table: FC<TableProps> = ({
       data,
       initialState: { pageIndex: 0, pageSize: 5 },
       autoResetPage: !skipPageReset,
-      autoResetExpanded: !skipPageReset,
-      autoResetGroupBy: !skipPageReset,
-      autoResetSelectedRows: !skipPageReset,
-      autoResetSortBy: !skipPageReset,
-      autoResetFilters: !skipPageReset,
-      autoResetRowState: !skipPageReset,
     },
     useSortBy,
     usePagination,
   );
 
-  const handleDeleteDataRowButton = (id: string) => {
+  const handleDeleteDataRowButton = (rowId: string) => {
     setIsDeleteConfirmOpen(true);
-    setDeleteUserId(id);
+    setDeleteUserId(rowId);
   };
 
-  const handleUpdateTableData = (user: IUser) => {
-    const originalRow = initialData.find((el) => el.id === user.id);
-    const isDataChanged = JSON.stringify(originalRow) === JSON.stringify(user);
-
-    if (!isDataChanged) {
-      updateUser(user);
+  const handleUpdateTableData = (userId: string) => {
+    if (Object.keys(state).length) {
+      updateUser({ id: userId, ...state[userId] });
     } else {
       setEditingRowId('');
     }
   };
 
-  const handleAddNewUser = (event: { preventDefault: () => void }) => {
-    event.preventDefault();
+  const handleAddNewUser = () => {
     addUser(newUser);
   };
 
@@ -128,30 +118,13 @@ const Table: FC<TableProps> = ({
   };
 
   const handleCloseAddNewData = () => {
-    setIsOpenForm(false);
-    setErrors({});
+    setIsFormOpen(false);
     setNewUser(INITIAL_USER);
   };
 
   const handleCloseDeleteConfirm = () => {
     setDeleteUserId(null);
     setIsDeleteConfirmOpen(false);
-  };
-
-  const updateMyData = (rowIndex: number, columnId: string, value: string) => {
-    setSkipPageReset(true);
-    const rowNumber = Number(rowIndex);
-    setData((old) =>
-      old?.map((row, index) => {
-        if (index === rowNumber) {
-          return {
-            ...old[rowNumber],
-            [columnId]: value,
-          };
-        }
-        return row;
-      }),
-    );
   };
 
   const handleDefaultParams = () => {
@@ -177,8 +150,7 @@ const Table: FC<TableProps> = ({
   useEffect(() => {
     if (!isAdding) {
       setNewUser(INITIAL_USER);
-      setErrors({});
-      setIsOpenForm(false);
+      setIsFormOpen(false);
     }
   }, [isAdding]);
 
@@ -192,8 +164,7 @@ const Table: FC<TableProps> = ({
     if (isAddingError) {
       addingError && handleAlertMessage(addingError);
       setNewUser(INITIAL_USER);
-      setErrors({});
-      setIsOpenForm(false);
+      setIsFormOpen(false);
     }
     if (isUpdatingError) {
       updatingError && handleAlertMessage(updatingError);
@@ -219,9 +190,10 @@ const Table: FC<TableProps> = ({
         <StyledTable {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
+              <tr className="table-row" {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th
+                    className="table-header-cell"
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                     style={{ minWidth: column.minWidth }}
                   >
@@ -235,10 +207,10 @@ const Table: FC<TableProps> = ({
                     </span>
                   </th>
                 ))}
-                <th>
+                <th className="table-header-cell">
                   <button
                     className="add-new-user-btn"
-                    onClick={() => setIsOpenForm(!isOpenForm)}
+                    onClick={() => setIsFormOpen(true)}
                   >
                     +
                   </button>
@@ -251,42 +223,39 @@ const Table: FC<TableProps> = ({
               prepareRow(row);
               const isEditing = row.id === editingRowId;
               return (
-                <tr {...row.getRowProps()}>
+                <tr className="table-row" {...row.getRowProps()}>
                   {row.cells.map((cell, index) => {
                     return isEditing && index !== 0 ? (
                       <td
+                        className="table-body-cell"
                         {...cell.getCellProps({
                           style: { minWidth: cell.column.minWidth },
                         })}
                       >
-                        <input
-                          size={1}
-                          className="edit-input"
-                          type="text"
+                        <TableInput
                           value={cell.value}
-                          onChange={(e) =>
-                            updateMyData(
-                              cell.row.index,
-                              cell.column.id,
-                              e.target.value,
-                            )
-                          }
+                          row={{
+                            id: cell.row.original.id!,
+                            name: cell.column.id,
+                          }}
                         />
                       </td>
                     ) : (
-                      <td {...cell.getCellProps()}>
+                      <td className="table-body-cell" {...cell.getCellProps()}>
                         <span className="cell-text">{cell.render('Cell')}</span>
                       </td>
                     );
                   })}
 
-                  <td>
+                  <td className="table-body-cell">
                     {isEditing ? (
                       <div className="action-btns">
                         <LoadButton
                           title={t('buttons.save')}
                           isLoading={isUpdating}
-                          onClick={() => handleUpdateTableData(row.original)}
+                          onClick={() =>
+                            handleUpdateTableData(row.original.id!)
+                          }
                         />
                         <button
                           className="btn cancel-btn"
@@ -337,48 +306,50 @@ const Table: FC<TableProps> = ({
       />
       <SelectLanguage />
       <Modal
-        open={isOpenForm}
-        children={
-          <Form
-            handleSaveUser={handleAddNewUser}
-            newUser={newUser}
-            setNewUser={setNewUser}
-            errors={errors}
-            setErrors={setErrors}
-            handleCancelButton={handleCloseAddNewData}
-            isLoading={isAdding}
-          />
-        }
-        onClose={handleCloseAddNewData}
-        title={t('defaultMenu.modalTitle')}
-      ></Modal>
-      <Modal
         open={alert.open}
         onClose={handleAlertClose}
         title={alert.message}
       ></Modal>
-      <Modal
-        open={isDeleteConfirmOpen}
-        children={
-          <>
-            <div className="footer">
-              <LoadButton
-                title={t('buttons.delete')}
-                isLoading={isDeleting}
-                onClick={handleSubmitAlert}
-              />
-              <button
-                className="modal-btn cancel-btn"
-                onClick={handleCloseDeleteConfirm}
-              >
-                {t('buttons.cancel')}
-              </button>
-            </div>
-          </>
-        }
-        onClose={handleCloseDeleteConfirm}
-        title={t('defaultMenu.alertTitle')}
-      ></Modal>
+      {isDeleteConfirmOpen && (
+        <Modal
+          open={isDeleteConfirmOpen}
+          children={
+            <>
+              <div className="footer">
+                <LoadButton
+                  title={t('buttons.delete')}
+                  isLoading={isDeleting}
+                  onClick={handleSubmitAlert}
+                />
+                <button
+                  className="modal-btn cancel-btn"
+                  onClick={handleCloseDeleteConfirm}
+                >
+                  {t('buttons.cancel')}
+                </button>
+              </div>
+            </>
+          }
+          onClose={handleCloseDeleteConfirm}
+          title={t('defaultMenu.alertTitle')}
+        />
+      )}
+      {isFormOpen && (
+        <Modal
+          open={isFormOpen}
+          children={
+            <Form
+              handleSaveUser={handleAddNewUser}
+              newUser={newUser}
+              setNewUser={setNewUser}
+              handleCancelButton={handleCloseAddNewData}
+              isLoading={isAdding}
+            />
+          }
+          onClose={handleCloseAddNewData}
+          title={t('defaultMenu.modalTitle')}
+        />
+      )}
     </>
   );
 };
