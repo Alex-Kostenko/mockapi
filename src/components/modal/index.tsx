@@ -2,14 +2,15 @@ import React, { FC, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 
 import { Palette } from '../../utils/palette';
+import CloseButton from '../buttons/close';
 import CloseIcon from '../icons/CloseIcon';
 import { StyledModal } from './styles';
 
 interface ModalProps {
   open: boolean;
-  children?: ReactNode;
+  children: ReactNode;
   onClose: () => void;
-  title: string;
+  title: string | null;
 }
 
 const Modal: FC<ModalProps> = ({ open, children, onClose, title }) => {
@@ -26,9 +27,7 @@ const Modal: FC<ModalProps> = ({ open, children, onClose, title }) => {
       <div className="modal">
         <div className="header">
           <h2>{title}</h2>
-          <button className="close-btn" onClick={onClose}>
-            <CloseIcon size="24px" fill={Palette.greyLight} />
-          </button>
+          <CloseButton onClick={onClose} />
         </div>
         {children}
       </div>

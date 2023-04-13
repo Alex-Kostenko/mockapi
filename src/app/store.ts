@@ -3,10 +3,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 import errorReducer from './errorSlice';
-import { rtkQueryErrorLogger } from './middleware';
+import rtkQueryErrorLogger from './middleware';
 import { api } from './service';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
     error: errorReducer,
@@ -24,3 +24,5 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   unknown,
   Action<string>
 >;
+
+export default store;

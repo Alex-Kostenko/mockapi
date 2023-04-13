@@ -53,13 +53,15 @@ const Table: FC<TableProps> = ({
   const { state } = useTableContext();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const { open: isAlertOpen, message: errorMessage } = useAppSelector(
-    (state: RootState) => state.error,
-  );
+  const {
+    open: isAlertOpen,
+    message: errorMessage,
+    status,
+  } = useAppSelector((state: RootState) => state.error);
 
+  const [addUser, { isLoading: isAdding }] = useAddNewUserMutation();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserDataMutation();
-  const [addUser, { isLoading: isAdding }] = useAddNewUserMutation();
 
   const {
     getTableProps,
@@ -248,8 +250,11 @@ const Table: FC<TableProps> = ({
       {isAlertOpen && (
         <Modal
           open={isAlertOpen}
-          onClose={() => dispatch(setError({ open: false, message: null }))}
-          title={errorMessage!}
+          onClose={() =>
+            dispatch(setError({ open: false, message: null, status: null }))
+          }
+          children={<span>{errorMessage}</span>}
+          title={status}
         />
       )}
       {isDeleteConfirmOpen && (
