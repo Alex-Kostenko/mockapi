@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components';
 
-import { Palette } from '../../palette';
+import { Palette } from '../../utils/palette';
 
 export const StyledLoader = styled.div`
   position: absolute;

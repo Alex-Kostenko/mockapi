@@ -9,16 +9,18 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import classNames from 'classnames';
+
 import { INITIAL_USER } from '../../utils/constants';
 import { UserFieldsEnum } from '../../utils/enums';
-import { capitalizeFirstLetter } from '../../utils/helpers';
 import { lettersRegExp, positiveNumbersRegex } from '../../utils/regex';
 import { IFormErrors, IUser } from '../../utils/types';
+import CancelButton from '../buttons/cancel';
 import LoadButton from '../loadButton';
 import { StyledForm } from './styles';
 
 interface FormProps {
-  handleSaveUser: (event: { preventDefault: () => void }) => void;
+  handleSaveUser: () => void;
   newUser: IUser;
   setNewUser: Dispatch<SetStateAction<IUser>>;
   handleCancelButton: () => void;
@@ -36,7 +38,7 @@ const Form: FC<FormProps> = ({
   const [isSubmit, setIsSubmit] = useState(false);
   const { t } = useTranslation();
 
-  const VALIDATIONS_ERRORS = {
+  const ValidatonErrors = {
     name: t('errors.name'),
     age: t('errors.age'),
     about: t('errors.about'),
@@ -55,11 +57,11 @@ const Form: FC<FormProps> = ({
       case UserFieldsEnum.Name:
         return lettersRegExp.test(value) && value.length < 400
           ? ''
-          : VALIDATIONS_ERRORS.name;
+          : ValidatonErrors.name;
       case UserFieldsEnum.Age:
-        return positiveNumbersRegex.test(value) ? '' : VALIDATIONS_ERRORS.age;
+        return positiveNumbersRegex.test(value) ? '' : ValidatonErrors.age;
       case UserFieldsEnum.About:
-        return value.length > 4000 ? VALIDATIONS_ERRORS.about : '';
+        return value.length > 4000 ? ValidatonErrors.about : '';
       default:
         return '';
     }
@@ -69,12 +71,12 @@ const Form: FC<FormProps> = ({
     event.preventDefault();
     setIsSubmit(true);
     if (!isError) {
-      handleSaveUser(event);
+      handleSaveUser();
     } else {
       setErrors({
         ...errors,
-        name: !newUser.name ? VALIDATIONS_ERRORS.nameRequired : errors.name,
-        age: !newUser.age ? VALIDATIONS_ERRORS.ageRequired : errors.age,
+        name: !newUser.name ? ValidatonErrors.nameRequired : errors.name,
+        age: !newUser.age ? ValidatonErrors.ageRequired : errors.age,
       });
     }
   };
@@ -87,51 +89,61 @@ const Form: FC<FormProps> = ({
   return (
     <StyledForm onSubmit={handleSubmit}>
       <div className="form-input">
-        <label className={`input-label ${errors.name ? 'error' : ''}`}>
-          {`${capitalizeFirstLetter(UserFieldsEnum.Name)}:*`}
+        <label
+          htmlFor="name-input"
+          className={classNames('input-label', { error: errors.name })}
+        >
+          {UserFieldsEnum.Name}: *
+          <input
+            className={classNames('input-base', { error: errors.name })}
+            type="text"
+            value={newUser.name}
+            name={UserFieldsEnum.Name}
+            onChange={handleInputChange}
+            placeholder={`${t('defaultMenu.enter')} ${t('defaultMenu.name')}`}
+            id="name-input"
+          />
         </label>
-        <input
-          className={`input-base ${errors.name ? 'error' : ''}`}
-          type="text"
-          value={newUser.name}
-          name={UserFieldsEnum.Name}
-          onChange={handleInputChange}
-          placeholder={`${t('defaultMenu.enter')} ${t('defaultMenu.name')}`}
-        />
-        <label className="error-text error">{errors.name}</label>
+        <div className="error-text error">{errors.name}</div>
       </div>
       <div className="form-input">
-        <label className={`input-label ${errors.age ? 'error' : ''}`}>
-          {`${capitalizeFirstLetter(UserFieldsEnum.Age)}:*`}
+        <label
+          htmlFor="age-input"
+          className={classNames('input-label', { error: errors.age })}
+        >
+          {UserFieldsEnum.Age}: *
+          <input
+            className={classNames('input-base', { error: errors.age })}
+            type="text"
+            name={UserFieldsEnum.Age}
+            value={newUser.age}
+            onChange={handleInputChange}
+            placeholder={`${t('defaultMenu.enter')} ${t('defaultMenu.age')}`}
+            id="age-input"
+          />
         </label>
-        <input
-          className={`input-base ${errors.age ? 'error' : ''}`}
-          type="text"
-          name={UserFieldsEnum.Age}
-          value={newUser.age}
-          onChange={handleInputChange}
-          placeholder={`${t('defaultMenu.enter')} ${t('defaultMenu.age')}`}
-        />
-        <label className="error-text error">{errors.age}</label>
+        <div className="error-text error">{errors.age}</div>
       </div>
       <div className="form-input">
-        <label className="input-label">
-          {capitalizeFirstLetter(UserFieldsEnum.About) + ':'}
+        <label htmlFor="about-input" className="input-label">
+          {UserFieldsEnum.About}:
+          <input
+            className={classNames('input-base', { error: errors.about })}
+            type="text"
+            name={UserFieldsEnum.About}
+            value={newUser.about}
+            onChange={handleInputChange}
+            placeholder={`${t('defaultMenu.enter')} ${t('defaultMenu.about')}`}
+            id="about-input"
+          />
         </label>
-        <input
-          className={`input-base ${errors.about ? 'error' : ''}`}
-          type="text"
-          name={UserFieldsEnum.About}
-          value={newUser.about}
-          onChange={handleInputChange}
-          placeholder={`${t('defaultMenu.enter')} ${t('defaultMenu.about')}`}
-        />
-        <label className="error-text error">{errors.about}</label>
+        <div className="error-text error">{errors.about}</div>
       </div>
       <div className="footer">
-        <button className="modal-btn cancel-btn" onClick={handleCancelButton}>
-          {t('buttons.cancel')}
-        </button>
+        <CancelButton
+          title={t('buttons.cancel')}
+          onClick={handleCancelButton}
+        />
         <LoadButton
           type="submit"
           title={t('defaultMenu.ok')}

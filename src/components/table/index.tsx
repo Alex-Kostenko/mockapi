@@ -8,17 +8,18 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Column, usePagination, useSortBy, useTable } from 'react-table';
 
-import { SerializedError } from '@reduxjs/toolkit';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
-
+import { setError } from '../../app/errorSlice';
 import {
   useDeleteUserMutation,
   useUpdateUserDataMutation,
   useAddNewUserMutation,
 } from '../../app/service';
+import { RootState, useAppDispatch, useAppSelector } from '../../app/store';
+import { useTableContext } from '../../context/table';
 import { INITIAL_USER } from '../../utils/constants';
 import { IUser } from '../../utils/types';
-import { useTableContext } from '../context/table';
+import CancelButton from '../buttons/cancel';
+import SubmitButton from '../buttons/submit';
 import Form from '../form';
 import LoadButton from '../loadButton';
 import Modal from '../modal';
@@ -45,25 +46,20 @@ const Table: FC<TableProps> = ({
 }) => {
   const [newUser, setNewUser] = useState(INITIAL_USER);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [alert, setAlert] = useState({ message: '', open: false });
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState('');
+  const [editingRowId, setEditingRowId] = useState<null | string>('');
   const [deleteUserId, setDeleteUserId] = useState<null | string>(null);
-  const { state } = useTableContext();
-  const { t } = useTranslation();
 
-  const [
-    deleteUser,
-    { isLoading: isDeleting, error: deletingError, isError: isDeletingError },
-  ] = useDeleteUserMutation();
-  const [
-    updateUser,
-    { isLoading: isUpdating, error: updatingError, isError: isUpdatingError },
-  ] = useUpdateUserDataMutation();
-  const [
-    addUser,
-    { isLoading: isAdding, error: addingError, isError: isAddingError },
-  ] = useAddNewUserMutation();
+  const { state } = useTableContext();
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+  const { open: isAlertOpen, message: errorMessage } = useAppSelector(
+    (state: RootState) => state.error,
+  );
+
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserDataMutation();
+  const [addUser, { isLoading: isAdding }] = useAddNewUserMutation();
 
   const {
     getTableProps,
@@ -96,16 +92,11 @@ const Table: FC<TableProps> = ({
     setDeleteUserId(rowId);
   };
 
-  const handleUpdateTableData = (userId: string) => {
+  const handleUpdateTableData = async (userId: string) => {
     if (Object.keys(state).length) {
-      updateUser({ id: userId, ...state[userId] });
-    } else {
-      setEditingRowId('');
+      await updateUser({ id: userId, ...state[userId] });
     }
-  };
-
-  const handleAddNewUser = () => {
-    addUser(newUser);
+    setEditingRowId('');
   };
 
   const handleEditActionCancel = () => {
@@ -113,8 +104,10 @@ const Table: FC<TableProps> = ({
     setData(users);
   };
 
-  const handleSubmitAlert = () => {
-    deleteUserId && deleteUser(deleteUserId);
+  const handleSubmitAlert = async () => {
+    deleteUserId && (await deleteUser(deleteUserId));
+    setIsDeleteConfirmOpen(false);
+    setDeleteUserId(null);
   };
 
   const handleCloseAddNewData = () => {
@@ -127,62 +120,16 @@ const Table: FC<TableProps> = ({
     setIsDeleteConfirmOpen(false);
   };
 
-  const handleDefaultParams = () => {
+  const handleAddData = async () => {
+    await addUser(newUser);
+    setNewUser(INITIAL_USER);
+    setIsFormOpen(false);
+  };
+
+  useEffect(() => {
     window.scrollTo(0, 0);
     setEditingRowId('');
-  };
-
-  const handleAlertClose = () => setAlert((prev) => ({ ...prev, open: false }));
-  const handleAlertMessage = (
-    message: FetchBaseQueryError | SerializedError,
-  ) => {
-    const alertErrorMessage = JSON.stringify(message);
-    setAlert((prev) => ({ ...prev, message: alertErrorMessage, open: true }));
-  };
-
-  useEffect(() => {
-    if (!isDeleting) {
-      setIsDeleteConfirmOpen(false);
-      setDeleteUserId(null);
-    }
-  }, [isDeleting]);
-
-  useEffect(() => {
-    if (!isAdding) {
-      setNewUser(INITIAL_USER);
-      setIsFormOpen(false);
-    }
-  }, [isAdding]);
-
-  useEffect(() => {
-    if (!isUpdating) {
-      setEditingRowId('');
-    }
-  }, [isUpdating]);
-
-  useEffect(() => {
-    if (isAddingError) {
-      addingError && handleAlertMessage(addingError);
-      setNewUser(INITIAL_USER);
-      setIsFormOpen(false);
-    }
-    if (isUpdatingError) {
-      updatingError && handleAlertMessage(updatingError);
-      setEditingRowId('');
-    }
-    if (isDeletingError) {
-      deletingError && handleAlertMessage(deletingError);
-      setDeleteUserId(null);
-      setIsDeleteConfirmOpen(false);
-    }
-  }, [
-    isAddingError,
-    isUpdatingError,
-    isDeletingError,
-    addingError,
-    deletingError,
-    updatingError,
-  ]);
+  }, [pageIndex]);
 
   return (
     <>
@@ -257,31 +204,25 @@ const Table: FC<TableProps> = ({
                             handleUpdateTableData(row.original.id!)
                           }
                         />
-                        <button
-                          className="btn cancel-btn"
+                        <CancelButton
+                          title={t('buttons.cancel')}
                           onClick={handleEditActionCancel}
-                        >
-                          {t('buttons.cancel')}
-                        </button>
+                        />
                       </div>
                     ) : (
                       <div className="action-btns">
-                        <button
-                          className="btn submit-btn"
+                        <SubmitButton
+                          title={t('buttons.edit')}
                           onClick={() => {
                             setEditingRowId(row.id);
                           }}
-                        >
-                          {t('buttons.edit')}
-                        </button>
-                        <button
-                          className="btn cancel-btn"
+                        />
+                        <CancelButton
+                          title={t('buttons.delete')}
                           onClick={() =>
                             handleDeleteDataRowButton(row.values.id)
                           }
-                        >
-                          {t('buttons.delete')}
-                        </button>
+                        />
                       </div>
                     )}
                   </td>
@@ -293,7 +234,6 @@ const Table: FC<TableProps> = ({
       </StyledTableWrapper>
       <Pagination
         gotoPage={gotoPage}
-        handleDefaultParams={handleDefaultParams}
         canPreviousPage={canPreviousPage}
         previousPage={previousPage}
         nextPage={nextPage}
@@ -305,11 +245,13 @@ const Table: FC<TableProps> = ({
         pageSize={pageSize}
       />
       <SelectLanguage />
-      <Modal
-        open={alert.open}
-        onClose={handleAlertClose}
-        title={alert.message}
-      ></Modal>
+      {isAlertOpen && (
+        <Modal
+          open={isAlertOpen}
+          onClose={() => dispatch(setError({ open: false, message: null }))}
+          title={errorMessage!}
+        />
+      )}
       {isDeleteConfirmOpen && (
         <Modal
           open={isDeleteConfirmOpen}
@@ -321,12 +263,10 @@ const Table: FC<TableProps> = ({
                   isLoading={isDeleting}
                   onClick={handleSubmitAlert}
                 />
-                <button
-                  className="modal-btn cancel-btn"
+                <CancelButton
+                  title={t('buttons.cancel')}
                   onClick={handleCloseDeleteConfirm}
-                >
-                  {t('buttons.cancel')}
-                </button>
+                />
               </div>
             </>
           }
@@ -339,7 +279,7 @@ const Table: FC<TableProps> = ({
           open={isFormOpen}
           children={
             <Form
-              handleSaveUser={handleAddNewUser}
+              handleSaveUser={handleAddData}
               newUser={newUser}
               setNewUser={setNewUser}
               handleCancelButton={handleCloseAddNewData}

@@ -15,12 +15,8 @@ const LoadButton: FC<LoadButtonProps> = ({
 }) => {
   return (
     <StyledButton className="load-more-button-wrap">
-      <button {...props} className={`load-more-button`}>
-        {isLoading ? (
-          <div className="btn-loader button__loader" />
-        ) : (
-          <span>{title}</span>
-        )}
+      <button {...props} className={'load-more-button'}>
+        {isLoading ? <div className="btn-loader" /> : title}
       </button>
     </StyledButton>
   );

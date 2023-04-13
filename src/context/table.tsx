@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 
-import { IStateContext } from '../../utils/types';
+import { IStateContext } from '../utils/types';
 
 interface AppProviderProps {
   children?: ReactNode;

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { Palette } from '../../palette';
-import { PADDINGS, SCALES } from '../../utils/constants';
+import { Paddings } from '../../utils/constants';
+import { Palette } from '../../utils/palette';
 
 export const StyledTable = styled.table`
   width: 100%;
@@ -42,25 +42,19 @@ export const StyledTable = styled.table`
     .edit-input {
       border: 1px solid ${Palette.greyLight};
       width: 100%;
-      padding: ${PADDINGS.s};
+      padding: ${Paddings.s};
       font-size: inherit;
       font-family: inherit;
     }
   }
 
   .table-header-cell {
+    cursor: pointer;
     .add-new-user-btn {
       cursor: pointer;
       font-size: 32px;
       background: none;
     }
-  }
-
-  .btn {
-    box-sizing: border-box;
-    padding: ${PADDINGS.m} ${PADDINGS.xxl};
-    cursor: pointer;
-    border-radius: ${SCALES.borderRadius};
   }
 
   .action-btns {
@@ -69,31 +63,6 @@ export const StyledTable = styled.table`
     justify-content: center;
     align-items: center;
     gap: 10px;
-  }
-
-  .cancel-btn {
-    color: ${Palette.black};
-    background-color: ${Palette.background};
-    border: 1px solid ${Palette.greyLight};
-  }
-
-  .cancel-btn:hover {
-    color: ${Palette.blueLight};
-    border: 1px solid ${Palette.blueLight};
-  }
-
-  .submit-btn {
-    color: ${Palette.white};
-    background-color: ${Palette.blue};
-  }
-
-  .submit-btn:hover {
-    background-color: ${Palette.blueLight};
-  }
-
-  .submit-btn:disabled {
-    cursor: not-allowed;
-    background-color: ${Palette.grey};
   }
 `;
 

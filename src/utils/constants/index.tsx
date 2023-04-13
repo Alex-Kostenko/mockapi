@@ -17,16 +17,17 @@ export const languageSelect = (t: (t: string) => void) => [
   },
 ];
 
-export const PAGE_SIZE_LIST: number[] = [5, 10, 20];
+export const PageSizeList: number[] = [5, 10, 20];
 
-export const PADDINGS = {
+export const Paddings = {
   s: '5px',
   m: '10px',
   l: '16px',
   xl: '20px',
   xxl: '30px',
+  xxxl: '48px',
 };
 
-export const SCALES = {
+export const Scales = {
   borderRadius: '4px',
 };

@@ -1,7 +1,7 @@
-import React, { FC, useRef } from 'react';
+import React, { FC } from 'react';
 
+import { useTableContext } from '../../context/table';
 import { IRow } from '../../utils/types';
-import { useTableContext } from '../context/table';
 
 interface TableInputprops {
   value: string;
@@ -11,10 +11,8 @@ interface TableInputprops {
 const TableInput: FC<TableInputprops> = ({ value, row }) => {
   const { state, setState } = useTableContext();
 
-  const ref = useRef(null);
   return (
     <input
-      ref={ref}
       size={1}
       className="edit-input"
       type="text"

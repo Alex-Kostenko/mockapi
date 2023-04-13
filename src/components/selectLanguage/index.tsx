@@ -10,9 +10,7 @@ const SelectLanguage = () => {
   const { t } = useTranslation();
 
   const handleChange = (value: string) => {
-    value === LanguagesCode.ukraine
-      ? i18n.changeLanguage(LanguagesCode.ukraine)
-      : i18n.changeLanguage(LanguagesCode.english);
+    i18n.changeLanguage(value);
   };
 
   return (
@@ -22,8 +20,8 @@ const SelectLanguage = () => {
         defaultValue={LanguagesCode.english}
         onChange={(e) => handleChange(e.target.value)}
       >
-        {languageSelect(t).map((language, i) => (
-          <option key={i} value={language.value}>
+        {languageSelect(t).map((language) => (
+          <option key={language.value} value={language.value}>
             {language.label}
           </option>
         ))}

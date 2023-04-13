@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { Palette } from '../../palette';
-import { SCALES } from '../../utils/constants';
+import { Paddings, Scales } from '../../utils/constants';
+import { Palette } from '../../utils/palette';
 
 export const StyledModal = styled.div`
   position: fixed;
@@ -20,7 +20,7 @@ export const StyledModal = styled.div`
     transform: translate(-50%, -50%);
     background-color: ${Palette.background};
     z-index: 100;
-    padding: 32px 48px;
+    padding: ${Paddings.xxl} ${Paddings.xxxl};
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -44,24 +44,6 @@ export const StyledModal = styled.div`
     justify-content: end;
     align-items: center;
     gap: 20px;
-
-    .modal-btn {
-      box-sizing: border-box;
-      padding: 10px 30px;
-      cursor: pointer;
-      border-radius: ${SCALES.borderRadius};
-    }
-
-    .cancel-btn {
-      color: ${Palette.black};
-      background-color: ${Palette.background};
-      border: 1px solid ${Palette.greyLight};
-    }
-
-    .cancel-btn:hover {
-      color: ${Palette.blueLight};
-      border: 1px solid ${Palette.blueLight};
-    }
 
     .submit-btn {
       color: ${Palette.white};

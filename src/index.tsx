@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import App from './App';
 import { store } from './app/store';
-import TabsProvider from './components/context/table';
+import TabsProvider from './context/table';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 

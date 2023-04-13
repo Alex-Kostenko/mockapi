@@ -1,23 +1,25 @@
 import styled from 'styled-components';
 
-import { Palette } from '../../palette';
-import { PADDINGS, SCALES } from '../../utils/constants';
+import { Paddings, Scales } from '../../utils/constants';
+import { Palette } from '../../utils/palette';
 
 export const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${PADDINGS.m};
+  gap: ${Paddings.m};
   .form-input {
     display: flex;
     flex-direction: column;
   }
   .input-base {
+    width: 100%;
+    display: block;
     margin: 4px 0;
     min-height: 48px;
     min-width: 300px;
     border: 1px solid ${Palette.grey};
-    padding: ${PADDINGS.m};
-    border-radius: ${SCALES.borderRadius};
+    padding: ${Paddings.m};
+    border-radius: ${Scales.borderRadius};
     outline: none;
   }
   .error {
@@ -26,5 +28,8 @@ export const StyledForm = styled.form`
   }
   .error-text {
     font-size: 14px;
+  }
+  .input-label {
+    text-transform: capitalize;
   }
 `;

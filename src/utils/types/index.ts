@@ -19,7 +19,3 @@ export interface IFormErrors {
 export interface IStateContext {
   [id: string]: { [name: string]: string };
 }
-export interface IAddNewDataForm {
-  open: boolean;
-  isSubmit: boolean;
-}

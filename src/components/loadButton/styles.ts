@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { Palette } from '../../palette';
-import { PADDINGS, SCALES } from '../../utils/constants';
+import { Paddings, Scales } from '../../utils/constants';
+import { Palette } from '../../utils/palette';
 
 export const StyledButton = styled.div`
   display: inline-block;
@@ -11,11 +11,11 @@ export const StyledButton = styled.div`
     position: relative;
     background: ${Palette.blue};
     color: ${Palette.white};
-    border-radius: ${SCALES.borderRadius};
+    border-radius: ${Scales.borderRadius};
     margin: 0 auto;
     display: block;
     border: 0;
-    padding: ${PADDINGS.m} ${PADDINGS.xxl};
+    padding: ${Paddings.m} ${Paddings.xxl};
     z-index: 2;
     cursor: pointer;
     transition: all 0.5s;

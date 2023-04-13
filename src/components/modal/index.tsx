@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 
-import { Palette } from '../../palette';
+import { Palette } from '../../utils/palette';
 import CloseIcon from '../icons/CloseIcon';
 import { StyledModal } from './styles';
 

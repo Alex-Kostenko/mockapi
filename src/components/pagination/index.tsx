@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PAGE_SIZE_LIST } from '../../utils/constants';
+import { PageSizeList } from '../../utils/constants';
+import Button from './button';
 import { StyledPagination } from './styles';
 
 interface PaginationProps {
-  handleDefaultParams: () => void;
   canPreviousPage: boolean;
   previousPage: () => void;
   canNextPage: boolean;
@@ -20,7 +20,6 @@ interface PaginationProps {
 
 const Pagination: FC<PaginationProps> = ({
   gotoPage,
-  handleDefaultParams,
   canPreviousPage,
   previousPage,
   nextPage,
@@ -33,65 +32,40 @@ const Pagination: FC<PaginationProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const handleGoToStartPage = () => {
-    gotoPage(0);
-    handleDefaultParams();
-  };
-
-  const handlePreviousPage = () => {
-    previousPage();
-    handleDefaultParams();
-  };
-  const handleNextPage = () => {
-    nextPage();
-    handleDefaultParams();
-  };
-
-  const handleGoToEndPage = () => {
-    gotoPage(pageCount - 1);
-    handleDefaultParams();
-  };
-
   const handleGoToPageInput = (value: string) => {
     const page = value ? Number(value) - 1 : 0;
     gotoPage(page);
   };
 
-  const handlePageSizeSelect = (value: string) => {
-    setPageSize(Number(value));
-    handleDefaultParams();
+  const selectPageSize = (value: number) => {
+    setPageSize(value);
+    gotoPage(0);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === '-' || e.key === 'e' || e.key === '.') {
+      e.preventDefault();
+    }
   };
 
   return (
     <StyledPagination>
-      <button
-        className="pagination-btn"
-        onClick={handleGoToStartPage}
+      <Button
+        title="<<"
+        onClick={() => gotoPage(0)}
         disabled={!canPreviousPage}
-      >
-        {'<<'}
-      </button>
-      <button
-        className="pagination-btn"
-        onClick={handlePreviousPage}
+      />
+      <Button
+        title="<"
+        onClick={() => previousPage()}
         disabled={!canPreviousPage}
-      >
-        {'<'}
-      </button>
-      <button
-        className="pagination-btn"
-        onClick={handleNextPage}
+      />
+      <Button title=">" onClick={() => nextPage()} disabled={!canNextPage} />
+      <Button
+        title=">>"
+        onClick={() => gotoPage(pageCount - 1)}
         disabled={!canNextPage}
-      >
-        {'>'}
-      </button>
-      <button
-        className="pagination-btn"
-        onClick={handleGoToEndPage}
-        disabled={!canNextPage}
-      >
-        {'>>'}
-      </button>
+      />
       <span>
         {t('defaultMenu.page')}
         <strong>
@@ -106,15 +80,16 @@ const Pagination: FC<PaginationProps> = ({
           type="number"
           className="page-select"
           defaultValue={pageIndex + 1}
+          onKeyDown={(e) => handleKeyDown(e)}
           onChange={(e) => handleGoToPageInput(e.target.value)}
         />
       </span>
       <select
         className="page-size-select"
         value={pageSize}
-        onChange={(e) => handlePageSizeSelect(e.target.value)}
+        onChange={(e) => selectPageSize(Number(e.target.value))}
       >
-        {PAGE_SIZE_LIST.map((pageSize) => (
+        {PageSizeList.map((pageSize) => (
           <option key={pageSize} value={pageSize}>
             {t('defaultMenu.show')} {pageSize}
           </option>
