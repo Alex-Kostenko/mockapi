@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { Paddings, Scales } from '../../utils/constants';
+import { Paddings } from '../../utils/constants';
 import { Palette } from '../../utils/palette';
 
 export const StyledModal = styled.div`
@@ -26,17 +26,11 @@ export const StyledModal = styled.div`
     flex-direction: column;
   }
   .header {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 24px;
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
-
-    .close-btn {
-      cursor: pointer;
-      background: none;
-      width: 30px;
-    }
   }
   .footer {
     margin-top: 30px;
@@ -44,19 +38,5 @@ export const StyledModal = styled.div`
     justify-content: end;
     align-items: center;
     gap: 20px;
-
-    .submit-btn {
-      color: ${Palette.white};
-      background-color: ${Palette.blue};
-    }
-
-    .submit-btn:hover {
-      background-color: ${Palette.blueLight};
-    }
-
-    .submit-btn:disabled {
-      cursor: not-allowed;
-      background-color: ${Palette.grey};
-    }
   }
 `;

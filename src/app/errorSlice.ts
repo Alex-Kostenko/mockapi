@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface ErrorState {
   open: boolean;
   message: string | null;
+  status: string | null;
 }
 
 const initialState: ErrorState = {
   open: false,
   message: null,
+  status: null,
 };
 
 const errorSlice = createSlice({
@@ -15,7 +17,10 @@ const errorSlice = createSlice({
   initialState,
   reducers: {
     setError: (state, action: PayloadAction<ErrorState>) => {
-      state = action.payload;
+      const { message, open, status } = action.payload;
+      state.message = message;
+      state.open = open;
+      state.status = status;
     },
   },
 });
